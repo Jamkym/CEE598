@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+<title>Employees Table</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  table {
+    border-collapse: collapse;
+    width: 80%;
+  }
+  
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+</style>
+</head>
+<body>
+
+<!-- <input type="file" id="input" accept=".xlsx"> -->
+<table id="employee-table">
+  <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Address Line 1</th>
+      <th>Address Line 2</th>
+      <th>City</th>
+      <th>State</th>
+      <th>ZipCode</th>
+      <th>Telephone</th>
+      <th>Emergency Contact Name</th>
+      <th>Emergency Contact Address Line 1</th>
+      <th>Emergency Contact City</th>
+      <th>Emergency Contact State</th>
+      <th>Emergency Contact Zip Code</th>
+      <th>Emergency Contact Telephone</th>
+    </tr>
+  </thead>
+  <tbody id="employee-body">
+    <!-- Employee data will be inserted here -->
+  </tbody>
+</table>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+<!-- <script src="script.js"></script> -->
+
+</body>
+</html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var tableBody = document.getElementById('employee-body');
+  var input = document.getElementById('input');
+  
+  input.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      var data = new Uint8Array(e.target.result);
+      var workbook = XLSX.read(data, {type: 'array'});
+      var sheetName = workbook.SheetNames[0];
+      var sheet = workbook.Sheets[sheetName];
+      var range = XLSX.utils.decode_range(sheet['!ref']);
+      var jsonData = XLSX.utils.sheet_to_json(sheet, {header: 1, range: range});
+
+      jsonData.forEach(function(row) {
+        var newRow = '<tr>';
+        row.forEach(function(value) {
+          newRow += '<td>' + value + '</td>';
+        });
+        newRow += '</tr>';
+        tableBody.innerHTML += newRow;
+      });
+    };
+
+    reader.readAsArrayBuffer("List_of_Employees.xlsx");
+  });
+});
+
+
+</script>
