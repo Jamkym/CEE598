@@ -8,16 +8,37 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+    padding: 0;
   }
-  
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+  }
+
+  form {
+    width: 80%;
+    margin-bottom: 20px;
+  }
+
+  form label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  form input {
+    width: calc(100% - 10px); /* Adjust width according to your preference */
+    margin-bottom: 10px;
+    padding: 5px;
+  }
+
   table {
     border-collapse: collapse;
     width: 80%;
+    margin-bottom: 20px;
   }
   
   th, td {
@@ -33,67 +54,83 @@
 </head>
 <body>
 
-<!-- <input type="file" id="input" accept=".xlsx"> -->
-<table id="employee-table">
-  <thead>
-    <tr>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Address Line 1</th>
-      <th>Address Line 2</th>
-      <th>City</th>
-      <th>State</th>
-      <th>ZipCode</th>
-      <th>Telephone</th>
-      <th>Emergency Contact Name</th>
-      <th>Emergency Contact Address Line 1</th>
-      <th>Emergency Contact City</th>
-      <th>Emergency Contact State</th>
-      <th>Emergency Contact Zip Code</th>
-      <th>Emergency Contact Telephone</th>
-    </tr>
-  </thead>
-  <tbody id="employee-body">
-    <!-- Employee data will be inserted here -->
-  </tbody>
-</table>
+<div class="container">
+  <form id="employee-form">
+    <label for="first-name">First Name:</label>
+    <input type="text" id="first-name" name="first-name"><br>
+    <label for="last-name">Last Name:</label>
+    <input type="text" id="last-name" name="last-name"><br>
+    <label for="address-line-1">Address Line 1:</label>
+    <input type="text" id="address-line-1" name="address-line-1"><br>
+    <label for="address-line-2">Address Line 2:</label>
+    <input type="text" id="address-line-2" name="address-line-2"><br>
+    <label for="city">City:</label>
+    <input type="text" id="city" name="city"><br>
+    <label for="state">State:</label>
+    <input type="text" id="state" name="state"><br>
+    <label for="zipcode">ZipCode:</label>
+    <input type="text" id="zipcode" name="zipcode"><br>
+    <label for="telephone">Telephone:</label>
+    <input type="text" id="telephone" name="telephone"><br>
+    <label for="emergency-contact-name">Emergency Contact Name:</label>
+    <input type="text" id="emergency-contact-name" name="emergency-contact-name"><br>
+    <label for="emergency-contact-address-line-1">Emergency Contact Address Line 1:</label>
+    <input type="text" id="emergency-contact-address-line-1" name="emergency-contact-address-line-1"><br>
+    <label for="emergency-contact-city">Emergency Contact City:</label>
+    <input type="text" id="emergency-contact-city" name="emergency-contact-city"><br>
+    <label for="emergency-contact-state">Emergency Contact State:</label>
+    <input type="text" id="emergency-contact-state" name="emergency-contact-state"><br>
+    <label for="emergency-contact-zipcode">Emergency Contact Zip Code:</label>
+    <input type="text" id="emergency-contact-zipcode" name="emergency-contact-zipcode"><br>
+    <label for="emergency-contact-telephone">Emergency Contact Telephone:</label>
+    <input type="text" id="emergency-contact-telephone" name="emergency-contact-telephone"><br><br>
+    <button type="button" onclick="addEmployee()">Add Employee</button>
+  </form>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-<!-- <script src="script.js"></script> -->
+  <table id="employee-table">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Address Line 1</th>
+        <th>Address Line 2</th>
+        <th>City</th>
+        <th>State</th>
+        <th>ZipCode</th>
+        <th>Telephone</th>
+        <th>Emergency Contact Name</th>
+        <th>Emergency Contact Address Line 1</th>
+        <th>Emergency Contact City</th>
+        <th>Emergency Contact State</th>
+        <th>Emergency Contact Zip Code</th>
+        <th>Emergency Contact Telephone</th>
+      </tr>
+    </thead>
+    <tbody id="employee-body">
+      <!-- Employee data will be inserted here -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+function addEmployee() {
+  var table = document.getElementById('employee-table');
+  var tbody = table.getElementsByTagName('tbody')[0];
+  var newRow = tbody.insertRow(tbody.rows.length);
+
+  // Get input values
+  var inputs = document.querySelectorAll('#employee-form input');
+  for (var i = 0; i < inputs.length; i++) {
+    var cell = newRow.insertCell(i);
+    cell.innerHTML = inputs[i].value;
+  }
+
+  // Clear input fields
+  for (var i = 0; i < inputs.length; i++) {
+    inputs[i].value = '';
+  }
+}
+</script>
 
 </body>
 </html>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var tableBody = document.getElementById('employee-body');
-  var input = document.getElementById('input');
-  
-  input.addEventListener('change', function(e) {
-    var file = e.target.files[0];
-    var reader = new FileReader();
-
-    reader.onload = function(e) {
-      var data = new Uint8Array(e.target.result);
-      var workbook = XLSX.read(data, {type: 'array'});
-      var sheetName = workbook.SheetNames[0];
-      var sheet = workbook.Sheets[sheetName];
-      var range = XLSX.utils.decode_range(sheet['!ref']);
-      var jsonData = XLSX.utils.sheet_to_json(sheet, {header: 1, range: range});
-
-      jsonData.forEach(function(row) {
-        var newRow = '<tr>';
-        row.forEach(function(value) {
-          newRow += '<td>' + value + '</td>';
-        });
-        newRow += '</tr>';
-        tableBody.innerHTML += newRow;
-      });
-    };
-
-    reader.readAsArrayBuffer("List_of_Employees.xlsx");
-  });
-});
-
-
-</script>
